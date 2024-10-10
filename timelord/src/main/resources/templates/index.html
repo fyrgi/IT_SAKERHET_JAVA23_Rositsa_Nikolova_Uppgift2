@@ -5,6 +5,66 @@
     <title>Welcome Timelord</title>
 </head>
 <body>
-    <h1>Welcome to index</h1>
+<h2>Login</h2>
+<input type="text" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button id="loginButton">Login</button>
+<button id="dataButton">Get Protected Data</button>
+
+<script>
+    let jwt = null; // This variable will store the JWT, for improvements, use SessionStorage instead
+    document.getElementById('loginButton').addEventListener('click', function() {
+        login();
+    });
+
+    document.getElementById('dataButton').addEventListener('click', function() {
+        fetchProtectedData();
+    });
+    function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        fetch('/authenticate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email, password: password })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    jwt = data.token; // Store the JWT in the variable
+                    console.log('JWT:', jwt); // Log JWT to the console
+                    alert('JWT received and stored. Check the console for the token.');
+                } else {
+                    alert('Login failed: ' + data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    //Next Step.
+    function fetchProtectedData() {
+        if (jwt) {
+            fetch('/protected', {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.data) {
+                        alert('Protected Data: ' + data.data);
+                    } else {
+                        alert('Failed to fetch protected data: ' + data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        } else {
+            alert('You are not authenticated. Please log in to get the JWT.');
+        }
+    }
+</script>
 </body>
 </html>

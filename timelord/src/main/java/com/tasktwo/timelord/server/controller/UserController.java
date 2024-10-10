@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/users")
@@ -17,4 +18,5 @@ public class UserController {
     @Transactional
     @GetMapping("/all")
     public List<UserModel> getAllUsers(){ return userService.getAllUsers(); }
+
 }
