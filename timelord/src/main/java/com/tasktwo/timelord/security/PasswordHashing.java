@@ -3,7 +3,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
 @Component
-public class PasswordHasshing {
+public class PasswordHashing {
     private final String salt = "aUdnmJw@";
     public String hashPassword(String password) {
         try {
