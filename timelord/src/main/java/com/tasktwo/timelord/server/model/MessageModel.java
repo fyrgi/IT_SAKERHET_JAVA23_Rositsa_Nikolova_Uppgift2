@@ -19,6 +19,6 @@ public class MessageModel {
     @Column(nullable = false, unique = false)
     private String message;
 
-    @OneToMany(mappedBy = "message")
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL) // Explicitly mention the mapped field
     private List<UserMessageModel> userMessages;
 }
