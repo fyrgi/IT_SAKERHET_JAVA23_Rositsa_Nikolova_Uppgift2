@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/IT_SAKERHET_JAVA23_Rositsa_Nikolova_Uppgift2.iml" filepath="$PROJECT_DIR$/.idea/IT_SAKERHET_JAVA23_Rositsa_Nikolova_Uppgift2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/timelord/timelord.iml" filepath="$PROJECT_DIR$/timelord/timelord.iml" />
     </modules>
   </component>
 </project>

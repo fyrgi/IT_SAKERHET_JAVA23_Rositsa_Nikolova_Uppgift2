@@ -1,9 +1,12 @@
 package com.tasktwo.timelord.server.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -17,11 +20,15 @@ public class UserMessageModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    // Many UserMessage entries can be associated with one User
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
+    @JsonBackReference
     private UserModel user;
 
-    @ManyToOne
+    // Many UserMessage entries can be associated with one Message
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_message", nullable = false)
+    @JsonBackReference
     private MessageModel message;
 }

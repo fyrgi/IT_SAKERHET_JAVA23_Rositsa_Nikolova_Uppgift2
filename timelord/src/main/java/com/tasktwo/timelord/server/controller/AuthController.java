@@ -27,18 +27,16 @@ public class AuthController {
         // Extract username and password from the request body.
         String email = (String) credentials.get("email");
         String password = (String) credentials.get("password");
-        System.out.println(email+password);
+        // attempt login with the provided details
         Optional<UserModel> foundUser = userService.login(email, password);
-        System.out.println(foundUser.get().getId());
 
-        // Simple authentication check: in production, you should validate against a database or another secure system.
         if (foundUser.isPresent()) {
             // Create a signer using HMAC and your secret key. HMAC algorithm
             JWSSigner signer = new MACSigner(SECRET);
             // Create the claims for the JWT, such as subject, issuer, and expiration time.
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .subject("admin")
-                    .issuer("https://example.com")
+                    .issuer("https://timelordTask2.se")
                     .expirationTime(new Date(new Date().getTime() + 60 * 1000 * 60)) // JWT with 1 hour validity
                     .build();
             // Create a new JWT with the specified header and claims.
