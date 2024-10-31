@@ -16,7 +16,8 @@ public class Config {
         http
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("").authenticated()
+                        //.anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable);
 

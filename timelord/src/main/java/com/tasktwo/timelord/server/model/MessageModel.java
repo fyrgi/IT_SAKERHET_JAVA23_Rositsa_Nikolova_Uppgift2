@@ -23,19 +23,6 @@ public class MessageModel {
     @Column(nullable = false, unique = false)
     private String message;
 
-    // One Message can have many UserMessage associations
-    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<UserMessageModel> userMessages = new ArrayList<>();
-
-    // Helper methods to manage bidirectional relationship
-    public void addUserMessage(UserMessageModel userMessage) {
-        userMessages.add(userMessage);
-        userMessage.setMessage(this);
-    }
-
-    public void removeUserMessage(UserMessageModel userMessage) {
-        userMessages.remove(userMessage);
-        userMessage.setMessage(null);
-    }
+    @Column(nullable = false, unique = false)
+    private String id_user;
 }

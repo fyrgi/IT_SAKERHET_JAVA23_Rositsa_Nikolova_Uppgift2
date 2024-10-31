@@ -26,12 +26,16 @@ public class UserService {
 
     public Optional<UserModel> getUserById(Long userId){ return userRepository.findById(userId); }
     public Optional<UserModel> getUserByEmail(String email){ return userRepository.findByEmail(email); }
-    public UserModel saveUser(UserModel user) {
+
+    public void saveUser(String email, String password) {
         // Hash the password before saving
-        String hashedPassword = passwordHashing.hashPassword(user.getPassword());
+        UserModel user = new UserModel();
+        String hashedPassword = passwordHashing.hashPassword(password);
         user.setPassword(hashedPassword);
+        user.setEmail(email);
+        String key = "Key123";
+        user.setKey(key);
         userRepository.save(user);
-        return user;
     }
 
     public Optional<UserModel> login(String email, String password){

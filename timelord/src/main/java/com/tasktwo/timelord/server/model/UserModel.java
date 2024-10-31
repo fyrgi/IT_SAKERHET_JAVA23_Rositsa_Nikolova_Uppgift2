@@ -12,9 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@ToString(exclude = "userMessages")
-@EqualsAndHashCode(exclude = "userMessages")
 public class UserModel {
 
     @Id
@@ -28,20 +25,7 @@ public class UserModel {
     @Column(name="password",nullable = false)
     private String password;
 
-    // One user can have many messages
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<UserMessageModel> userMessages = new ArrayList<>();
-
-    // Helper methods to manage bidirectional relationship
-    public void addUserMessage(UserMessageModel userMessage) {
-        userMessages.add(userMessage);
-        userMessage.setUser(this);
-    }
-
-    public void removeUserMessage(UserMessageModel userMessage) {
-        userMessages.remove(userMessage);
-        userMessage.setUser(null);
-    }
+    @Column(name="dec-key", nullable = false)
+    private String key;
 
 }
