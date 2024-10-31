@@ -23,6 +23,8 @@ public class MessageModel {
     @Column(nullable = false, unique = false)
     private String message;
 
-    @Column(nullable = false, unique = false)
-    private String id_user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user", nullable = false)  // Foreign key column in "message" table
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})  // Avoids lazy loading issues in JSON serialization
+    private UserModel user;
 }

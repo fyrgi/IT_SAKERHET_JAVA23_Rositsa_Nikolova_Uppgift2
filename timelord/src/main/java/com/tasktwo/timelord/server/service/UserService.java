@@ -27,14 +27,14 @@ public class UserService {
     public Optional<UserModel> getUserById(Long userId){ return userRepository.findById(userId); }
     public Optional<UserModel> getUserByEmail(String email){ return userRepository.findByEmail(email); }
 
-    public void saveUser(String email, String password) {
+    public void saveUserToDatabase(String email, String password) {
         // Hash the password before saving
         UserModel user = new UserModel();
         String hashedPassword = passwordHashing.hashPassword(password);
         user.setPassword(hashedPassword);
         user.setEmail(email);
-        String key = "Key123";
-        user.setKey(key);
+        String decKey = "Key123";
+        user.setKey(decKey);
         userRepository.save(user);
     }
 
@@ -42,21 +42,17 @@ public class UserService {
         Optional<UserModel> foundUser = null;
         try {
             foundUser = userRepository.findByEmail(email);
-            System.out.println("The email " + email + " The user" + foundUser );
+            //System.out.println("The email " + email + " The user" + foundUser );
         } catch (Exception e) {
             System.out.println(e);
         }
         if(foundUser.isPresent()){
             UserModel user = foundUser.get();
             String hashedPassword = passwordHashing.hashPassword(password);
-            if (password.equals(user.getPassword())) {
-                System.out.println(hashedPassword);
+            if (hashedPassword.equals(user.getPassword())) {
                 return Optional.of(user);
             }
         }
         return Optional.empty();
-    }
-    public void deleteUser(Long userId){
-        userRepository.deleteById(userId);
     }
 }

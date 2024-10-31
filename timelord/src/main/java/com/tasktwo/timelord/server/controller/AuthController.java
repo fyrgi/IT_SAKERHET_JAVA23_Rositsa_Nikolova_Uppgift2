@@ -29,7 +29,6 @@ public class AuthController {
         String password = (String) credentials.get("password");
         // attempt login with the provided details
         Optional<UserModel> foundUser = userService.login(email, password);
-
         if (foundUser.isPresent()) {
             // Create a signer using HMAC and your secret key. HMAC algorithm
             JWSSigner signer = new MACSigner(SECRET);
@@ -45,7 +44,6 @@ public class AuthController {
             signedJWT.sign(signer);
             // Serialize the JWT to a compact, URL-safe string.
             String jwt = signedJWT.serialize();
-            System.out.println(jwt);
             // Return the JWT in a response map.
             return Map.of("token", jwt);
         } else {

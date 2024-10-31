@@ -19,7 +19,6 @@ public class PasswordHashing {
             for (byte b : hash) {
                 hexString.append(String.format("%02x", b));
             }
-            System.out.println(hexString.toString());
             return hexString.toString();
         } catch (Exception e) {
             throw new RuntimeException("Error hashing password", e);

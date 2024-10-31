@@ -28,4 +28,7 @@ public class UserModel {
     @Column(name="dec-key", nullable = false)
     private String key;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<MessageModel> messages = new ArrayList<>();
+
 }

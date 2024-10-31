@@ -15,9 +15,9 @@ public class Config {
         // CSRF removes the mandatory user / generated password login from Spring Security
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/**").permitAll()
-                        .requestMatchers("").authenticated()
-                        //.anyRequest().permitAll()
+                        //.requestMatchers("/**").permitAll()
+                        //.requestMatchers("").authenticated()
+                        .anyRequest().permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable);
 
