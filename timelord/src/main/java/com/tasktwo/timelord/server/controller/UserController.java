@@ -40,5 +40,11 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/logged")
+    public String getLoggedInPage() {
+
+        return "logged";
+    }
+
 
 }
