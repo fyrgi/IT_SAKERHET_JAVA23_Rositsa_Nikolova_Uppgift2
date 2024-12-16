@@ -1,12 +1,14 @@
 package com.tasktwo.timelord.server.controller;
 
 import com.tasktwo.timelord.server.model.UserModel;
+import com.tasktwo.timelord.server.service.JwtService;
 import com.tasktwo.timelord.server.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,17 +20,12 @@ public class UserController {
     @Autowired
     public UserService userService;
 
+    @Autowired
+    JwtService jwtService;
     @Transactional
     @GetMapping("/all")
     public List<UserModel> getAllUsers(){ return userService.getAllUsers(); }
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(String email, String password){
-        userService.login(email, password);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "User logged in");
-        return ResponseEntity.ok(response);
-    }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody Map<String, Object> credentials){
@@ -41,10 +38,30 @@ public class UserController {
     }
 
     @GetMapping("/logged")
-    public String getLoggedInPage() {
+    public ResponseEntity<?> getLoggedInPage(@RequestHeader("Authorization") String tokenHeader,
+                                             @RequestHeader("idUser") String userId) throws ParseException {
+        try{
+            // Extract the token from the header
+            String token = tokenHeader.replace("Bearer ", "");
 
-        return "logged";
+            // Validate the token
+            if (jwtService.validateToken(token)) {
+                String extractedEmail = jwtService.extractEmail(token);
+                boolean isTokenValid = jwtService.validateToken(token);
+                // Optional: Validate the user ID against the email
+                Optional<UserModel> user = userService.getUserByEmail(extractedEmail);
+                if (user.isPresent() && user.get().getId().toString().equals(userId)) {
+                    if(isTokenValid){
+                        return ResponseEntity.ok("The user can log in");
+                    } else {
+                        return ResponseEntity.status(401).body("Invalid token or user");
+                    }
+                }
+            }
+            // Invalid token or user mismatch
+            return ResponseEntity.status(401).body("Invalid token or user");
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Error: " + e.getMessage());
+        }
     }
-
-
 }

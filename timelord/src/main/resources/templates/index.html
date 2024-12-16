@@ -32,17 +32,12 @@
             const data = await response.json();
             if (response.ok) {
                 if (action === 'login') {
-                    // Save the JWT token in local storage
+                    // Save the JWT token and username in local storage and check if it is saved.
                     localStorage.setItem('jwt', data.token);
-                    localStorage.setItem('username', email);
-                    console.log('Logged in successfully:', data.token);
-
-                    // Check if token is actually set in localStorage
+                    localStorage.setItem('idUser', data.idUser);
                     const tokenCheck = localStorage.getItem('jwt');
-                    if (tokenCheck) {
-                        console.log("Token saved in localStorage:", tokenCheck);
-                        // Redirect only after confirming token exists
-                        window.location.href = "/logged";
+                    if (tokenCheck != 'undefined') {
+                        fetchProtectedData();
                     } else {
                         console.error("Token was not saved in localStorage.");
                     }
@@ -58,40 +53,32 @@
         }
     }
 
-    function getHeaders() {
-        const token = localStorage.getItem('jwt');
-        const headers = {
-            'Content-Type': 'application/json',
-        };
-
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        return headers;
-    }
-
-    // Load the JWT token when redirected to /logged page
-    async function onLoggedPageLoad() {
-        const token = localStorage.getItem('jwt');
-        if (token) {
-            console.log("JWT token found on /logged page:", token);
-            // You can also make a fetch request to confirm
-            await fetchProtectedData();
-        } else {
-            console.log("No JWT token found on /logged page.");
-        }
-    }
 
     async function fetchProtectedData() {
         try {
+            const token = localStorage.getItem('jwt');
+            const idUser = localStorage.getItem('idUser');
+            console.log(idUser);
+            if (token) {
+                console.log("JWT token found on /logged page:");
+            } else {
+                console.log("No JWT token found on /logged page.");
+                return;
+            }
+
             const response = await fetch('/logged', {
                 method: 'GET',
-                headers: getHeaders()
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'idUser': `${idUser}`
+                }
             });
+
 
             if (response.ok) {
                 console.log('Access granted to protected data');
+                window.location.href = 'my-page.html';
             } else {
                 console.log('Access denied');
             }
@@ -100,10 +87,6 @@
         }
     }
 
-    // Call onLoggedPageLoad if on /logged
-    if (window.location.pathname === '/logged') {
-        onLoggedPageLoad();
-    }
 </script>
 </body>
 </html>

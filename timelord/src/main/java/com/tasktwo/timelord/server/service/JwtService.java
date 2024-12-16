@@ -38,7 +38,6 @@ public class JwtService {
     public String extractEmail(String token) throws ParseException {
         SignedJWT signedJWT = SignedJWT.parse(token);
         String email = signedJWT.getJWTClaimsSet().getSubject();
-        System.out.println(email);
         return email;
     }
 

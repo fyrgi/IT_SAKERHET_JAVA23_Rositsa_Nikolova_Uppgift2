@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+</head>
+<body>
+<h1>Welcome, User!</h1>
+<button id="logoutButton">Logout</button>
+<h2>Create Time Capsule</h2>
+<textarea id="message" placeholder="Write your message here"></textarea>
+<button id="createButton">Create Capsule</button>
+<h2>Your Messages</h2>
+<div id="messages"></div>
+
+<script>
+    console.log(document.getElementById(logoutButton))
+    const token = localStorage.getItem('jwt');
+    console.log(localStorage.getItem('jwt'));
+    const idUser = localStorage.getItem('idUser');
+    document.getElementById("logoutButton").addEventListener("click", function() {
+        // Clear JWT token from localStorage or sessionStorage
+        localStorage.removeItem("jwt");
+
+        // Redirect to the login page after logging out
+        window.location.href = "/index.html"; // Redirect to the login page after logging out
+    });
+        document.getElementById('createButton').addEventListener('click', async () => {
+            const message = document.getElementById('message').value;
+
+            const response = await fetch('/messages/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'idUser': `${idUser}`
+                },
+                body: JSON.stringify({ message, token, idUser })
+            });
+            const result = await response.json();
+            alert(result.status || result.error);
+        });
+
+        async function fetchMessages() {
+            const response = await fetch('/messages/list', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'idUser': `${idUser}`
+                }
+            });
+            const messages = await response.json();
+            document.getElementById('messages').innerHTML = messages.join('<br>');
+        }
+
+        fetchMessages();
+</script>
+</body>
+</html>

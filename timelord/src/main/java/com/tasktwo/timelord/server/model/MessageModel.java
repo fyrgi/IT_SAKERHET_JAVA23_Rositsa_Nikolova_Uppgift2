@@ -1,13 +1,7 @@
 package com.tasktwo.timelord.server.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -23,8 +17,7 @@ public class MessageModel {
     @Column(nullable = false, unique = false)
     private String message;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user", nullable = false)  // Foreign key column in "message" table
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})  // Avoids lazy loading issues in JSON serialization
+    @ManyToOne
+    @JoinColumn(name = "id_user", nullable = false)
     private UserModel user;
 }
