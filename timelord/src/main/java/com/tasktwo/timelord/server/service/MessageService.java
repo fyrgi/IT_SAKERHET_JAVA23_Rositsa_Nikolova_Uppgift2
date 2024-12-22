@@ -1,5 +1,7 @@
 package com.tasktwo.timelord.server.service;
 
+import com.tasktwo.timelord.server.model.MessageModel;
+import com.tasktwo.timelord.server.model.UserModel;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -43,5 +45,11 @@ public class MessageService {
     private SecretKey convertKey(String base64Key) {
         byte[] decodedKey = Base64.getDecoder().decode(base64Key);
         return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+    }
+
+    public void saveMessage(String userId, String message){
+        MessageModel messageModel = new MessageModel();
+        secretKey = user
+        String decryptedMessage = decrypt()
     }
 }

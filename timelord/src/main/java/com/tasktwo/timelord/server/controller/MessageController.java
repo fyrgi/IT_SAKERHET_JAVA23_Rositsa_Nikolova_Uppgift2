@@ -35,9 +35,10 @@ public class MessageController {
     @Autowired
     MessageRepository messageRepository;
     @PostMapping("/create")
-    public ResponseEntity<Map<String, String>> createMessage(@RequestBody MessageDTO payload) {
+    public ResponseEntity<Map<String, String>> createMessage(@RequestHeader("Authorization") String tokenHeader,
+                                                             @RequestHeader("idUser") String userId) {
         try {
-            Optional<UserModel> userOptional = userService.getUserById(payload.getIdUser());
+            Optional<UserModel> userOptional = userService.getUserById(Long.valueOf(userId));
 
             if (userOptional.isPresent()) {
                 UserModel user = userOptional.get();
