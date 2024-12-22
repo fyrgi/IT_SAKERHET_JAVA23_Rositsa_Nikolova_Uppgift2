@@ -1,5 +1,6 @@
 package com.tasktwo.timelord.server.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,5 +20,6 @@ public class MessageModel {
 
     @ManyToOne
     @JoinColumn(name = "id_user", nullable = false)
+    @JsonBackReference
     private UserModel user;
 }

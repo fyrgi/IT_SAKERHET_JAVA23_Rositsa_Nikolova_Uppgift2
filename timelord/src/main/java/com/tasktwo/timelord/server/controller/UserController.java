@@ -41,14 +41,11 @@ public class UserController {
     public ResponseEntity<?> getLoggedInPage(@RequestHeader("Authorization") String tokenHeader,
                                              @RequestHeader("idUser") String userId) throws ParseException {
         try{
-            // Extract the token from the header
             String token = tokenHeader.replace("Bearer ", "");
 
-            // Validate the token
             if (jwtService.validateToken(token)) {
                 String extractedEmail = jwtService.extractEmail(token);
                 boolean isTokenValid = jwtService.validateToken(token);
-                // Optional: Validate the user ID against the email
                 Optional<UserModel> user = userService.getUserByEmail(extractedEmail);
                 if (user.isPresent() && user.get().getId().toString().equals(userId)) {
                     if(isTokenValid){
@@ -58,7 +55,6 @@ public class UserController {
                     }
                 }
             }
-            // Invalid token or user mismatch
             return ResponseEntity.status(401).body("Invalid token or user");
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Error: " + e.getMessage());

@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "user")
 public class UserModel {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
@@ -28,6 +27,6 @@ public class UserModel {
     private String key;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<MessageModel> messages = new ArrayList<>();
-
 }

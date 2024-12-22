@@ -1,5 +1,6 @@
 package com.tasktwo.timelord.server.controller;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.sun.tools.jconsole.JConsoleContext;
 import com.tasktwo.timelord.server.DTO.MessageDTO;
 import com.tasktwo.timelord.server.model.MessageModel;
@@ -59,6 +60,8 @@ public class MessageController {
     @GetMapping("/list")
     public ResponseEntity<List<String>> listMessages(@RequestHeader("Authorization") String token,
                                                      @RequestHeader("idUser") String userId) {
+        System.out.println("Token in messages "+token);
+        System.out.println("id in messages "+ userId);
         try {
             Optional<UserModel> userOptional = userService.getUserById(Long.valueOf(userId));
 
@@ -72,7 +75,7 @@ public class MessageController {
                         try {
                             return messageService.decrypt(message.getMessage(), userOptional.get().getKey());
                         } catch (Exception e) {
-                            throw new RuntimeException(e);
+                            return "Error decrypting message: " + e.getMessage();
                         }
                     })
                     .collect(Collectors.toList());

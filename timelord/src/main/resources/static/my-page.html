@@ -22,8 +22,8 @@
         // Clear JWT token from localStorage or sessionStorage
         localStorage.removeItem("jwt");
 
-        // Redirect to the login page after logging out
-        window.location.href = "/index.html"; // Redirect to the login page after logging out
+
+        window.location.href = "/index";
     });
         document.getElementById('createButton').addEventListener('click', async () => {
             const message = document.getElementById('message').value;
