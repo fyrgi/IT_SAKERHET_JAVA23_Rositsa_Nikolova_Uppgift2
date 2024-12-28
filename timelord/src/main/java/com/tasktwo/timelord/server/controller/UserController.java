@@ -22,6 +22,7 @@ public class UserController {
 
     @Autowired
     JwtService jwtService;
+
     @Transactional
     @GetMapping("/all")
     public List<UserModel> getAllUsers(){ return userService.getAllUsers(); }
@@ -58,6 +59,26 @@ public class UserController {
             return ResponseEntity.status(401).body("Invalid token or user");
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/authenticate")
+    public Map<String, String> authenticate(@RequestBody Map<String, Object> credentials) {
+        String email = (String) credentials.get("email");
+        String password = (String) credentials.get("password");
+
+        Optional<UserModel> foundUser = userService.login(email, password);
+        String userId = foundUser.get().getId().toString();
+
+        if (foundUser.isPresent()) {
+            try {
+                String jwt = jwtService.generateToken(email); // Generate the JWT
+                return Map.of("token", jwt, "idUser", userId); // Return the token and the id of the user.
+            } catch (Exception e) {
+                return Map.of("error", "Error generating token");
+            }
+        } else {
+            return Map.of("error", "Invalid credentials");
         }
     }
 }

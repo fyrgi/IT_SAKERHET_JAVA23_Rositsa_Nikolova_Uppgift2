@@ -16,7 +16,7 @@ import java.util.Base64;
 
 @Service
 public class MessageService {
-    private final String ALGORITHM = "AES";
+    private final String SECRET_KEY = "vYbIsCw1g6Gi63Ec0gnx3w==";
 
     public static SecretKey stringToAESKey(String keyString) throws Exception {
         // Key is hashed to 128-bit (16 bytes), otherwise gets fail
@@ -26,19 +26,20 @@ public class MessageService {
 
         return new SecretKeySpec(keyBytes, "AES");
     }
-    public String encrypt(String data, String decKey) throws Exception {
-        SecretKey secretKey = convertKey(String.valueOf(stringToAESKey(decKey)));
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
+    public String encrypt(String message) throws Exception {
+        SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        byte[] encryptedBytes = cipher.doFinal(data.getBytes());
+        byte[] encryptedBytes = cipher.doFinal(message.getBytes());
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
-    public String decrypt(String encryptedData, String decKey) throws Exception {
-        SecretKey secretKey = convertKey(String.valueOf(stringToAESKey(decKey)));
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
+    //Decrypts an encrypted message using AES decryption
+    public String decryptMessage(String encryptedMessage) throws Exception {
+        SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
+        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedMessage));
         return new String(decryptedBytes);
     }
 
@@ -49,7 +50,7 @@ public class MessageService {
 
     public void saveMessage(String userId, String message){
         MessageModel messageModel = new MessageModel();
-        secretKey = user
-        String decryptedMessage = decrypt()
+        //secretKey = user
+        //String decryptedMessage = decrypt()
     }
 }

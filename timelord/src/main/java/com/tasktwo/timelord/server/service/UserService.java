@@ -1,12 +1,10 @@
 package com.tasktwo.timelord.server.service;
 
 import com.tasktwo.timelord.security.PasswordHashing;
-import com.tasktwo.timelord.server.controller.AuthController;
 import com.tasktwo.timelord.server.model.UserModel;
 import com.tasktwo.timelord.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,19 +42,16 @@ public class UserService {
         Optional<UserModel> foundUser = null;
         try {
             foundUser = userRepository.findByEmail(email);
-            //System.out.println("The email " + email + " The user" + foundUser );
         } catch (Exception e) {
             System.out.println(e);
         }
         if(foundUser.isPresent()){
             UserModel user = foundUser.get();
-            String hashedPassword = passwordHashing.hashPassword(password);
-            if (hashedPassword.equals(user.getPassword())) {
+            String hashedPassword = user.getPassword();
+            if (passwordHashing.verifyPassword(password, hashedPassword)) {
                 return Optional.of(user);
             }
         }
         return Optional.empty();
     }
-
-
 }

@@ -11,8 +11,8 @@
 <textarea id="message" placeholder="Write your message here"></textarea>
 <button id="createButton">Create Capsule</button>
 <h2>Your Messages</h2>
-<div id="messages"></div>
-
+<button id="getMessagesButton">Get messages</button>
+<p id="messages"></p>
 <script>
     console.log(document.getElementById(logoutButton))
     const token = localStorage.getItem('jwt');
@@ -25,36 +25,37 @@
 
         window.location.href = "/index";
     });
-        document.getElementById('createButton').addEventListener('click', async () => {
-            const message = document.getElementById('message').value;
 
-            const response = await fetch('/messages/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                    'idUser': `${idUser}`
-                },
-                body: JSON.stringify({ message, token, idUser })
-            });
-            const result = await response.json();
-            alert(result.status || result.error);
+    document.getElementById('createButton').addEventListener('click', async () => {
+        const message = document.getElementById('message').value;
+
+        const response = await fetch('/messages/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'idUser': `${idUser}`
+            },
+            body: JSON.stringify({ message, token, idUser })
         });
+        const result = await response.json();
+        alert(result.status || result.error);
+    });
 
-        async function fetchMessages() {
-            const response = await fetch('/messages/list', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                    'idUser': `${idUser}`
-                }
-            });
-            const messages = await response.json();
-            document.getElementById('messages').innerHTML = messages.join('<br>');
-        }
+    document.getElementById('getMessagesButton').addEventListener('click', async () => fetchMessages());
+    async function fetchMessages() {
+        console.log(token)
+        const response = await fetch('/messages/view', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+        const messages = await response.json();
+        document.getElementById('messages').innerHTML = messages.join('<br>');
+    }
 
-        fetchMessages();
 </script>
 </body>
 </html>

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Getter
 @Setter
 public class MessageDTO {
-    private Long id;
+    private int id;
     private String message;
-    private Long idUser;
+    private int idUser;
 }

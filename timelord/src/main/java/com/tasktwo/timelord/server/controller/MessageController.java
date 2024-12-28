@@ -1,6 +1,7 @@
 package com.tasktwo.timelord.server.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.nimbusds.jose.JOSEException;
 import com.sun.tools.jconsole.JConsoleContext;
 import com.tasktwo.timelord.server.DTO.MessageDTO;
 import com.tasktwo.timelord.server.model.MessageModel;
@@ -12,12 +13,9 @@ import com.tasktwo.timelord.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sun.security.krb5.internal.ccache.MemoryCredentialsCache;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.ParseException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -35,56 +33,76 @@ public class MessageController {
     @Autowired
     MessageRepository messageRepository;
     @PostMapping("/create")
-    public ResponseEntity<Map<String, String>> createMessage(@RequestHeader("Authorization") String tokenHeader,
-                                                             @RequestHeader("idUser") String userId) {
+    public ResponseEntity<Map<String, String>> createMessage(@RequestHeader("Authorization") String token,
+                                                             @RequestBody MessageDTO messageDTO) throws ParseException, JOSEException {
+        if (token == null || !token.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+        }
+        String jwtToken = token.substring(7);
+        if (!jwtService.validateToken(jwtToken)) { // Corrected token validation logic
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid token"));
+        }
+
+        if (jwtService.isTokenExpired(jwtToken)) {
+            return ResponseEntity.status(401).body(Map.of("error", "You are logged out. Please log in again"));
+        }
+
+        String email = jwtService.extractEmail(jwtToken);
+        Optional<UserModel> userOptional = userService.getUserByEmail(email);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("error", "User not found. Please log in again."));
+        }
         try {
-            Optional<UserModel> userOptional = userService.getUserById(Long.valueOf(userId));
+            UserModel user = userOptional.get();
+            String encryptedMessage = messageService.encrypt(messageDTO.getMessage());
 
-            if (userOptional.isPresent()) {
-                UserModel user = userOptional.get();
-                String encryptedMessage = messageService.encrypt(payload.getMessage(), user.getKey());
+            MessageModel newMessage = new MessageModel();
+            newMessage.setMessage(encryptedMessage);
+            newMessage.setUser(user);
 
-                MessageModel newMessage = new MessageModel();
-                newMessage.setMessage(encryptedMessage);
-                newMessage.setUser(user);
+            messageRepository.save(newMessage);
+            return ResponseEntity.ok(Map.of("status", "Message saved"));
 
-                messageRepository.save(newMessage);
-                return ResponseEntity.ok(Map.of("status", "Message saved"));
-            } else {
-                return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
-            }
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error creating message"));
         }
     }
-
-    @GetMapping("/list")
-    public ResponseEntity<List<String>> listMessages(@RequestHeader("Authorization") String token,
-                                                     @RequestHeader("idUser") String userId) {
-        System.out.println("Token in messages "+token);
-        System.out.println("id in messages "+ userId);
-        try {
-            Optional<UserModel> userOptional = userService.getUserById(Long.valueOf(userId));
-
-            if (userOptional.isEmpty()) {
-                return ResponseEntity.status(401).body(Collections.emptyList());
-            }
-
-            List<MessageModel> messages = messageRepository.getMessagesByUser(userOptional.get());
-            List<String> decryptedMessages = messages.stream()
-                    .map(message -> {
-                        try {
-                            return messageService.decrypt(message.getMessage(), userOptional.get().getKey());
-                        } catch (Exception e) {
-                            return "Error decrypting message: " + e.getMessage();
-                        }
-                    })
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(decryptedMessages);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(Collections.emptyList());
+    @GetMapping("/view")
+    public List<String> viewTimeCapsules(@RequestHeader("Authorization") String token) throws Exception {
+        if (token == null || !token.startsWith("Bearer ")) {
+            return List.of("Unauthorized");
         }
+        String jwtToken = token.substring(7);
+        if (!jwtService.validateToken(jwtToken)) { // Corrected token validation logic
+            return List.of("Invalid token");
+        }
+
+        if (jwtService.isTokenExpired(jwtToken)) {
+            return List.of("You are logged out. Please log in again");
+        }
+
+        System.out.println("1");
+        String email = jwtService.extractEmail(jwtToken);
+        Optional<UserModel> userOptional = userService.getUserByEmail(email);
+        if (userOptional.isPresent()) {
+            System.out.println("2");
+            UserModel user = userOptional.get();
+            List<MessageModel> messages = user.getMessages();
+
+            //Decrypt each message before returning
+            return messages.stream()
+                    .map(msg -> {
+                        try {
+                            System.out.println(messageService.decryptMessage(msg.getMessage()));
+                            return messageService.decryptMessage(msg.getMessage());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return "Error decrypting message";
+                        }
+                    }).toList();
+        }
+        else {
+            return List.of("No messages"); }
+        //Fetch all time capsules for the user
     }
 }
