@@ -54,4 +54,8 @@ public class UserService {
         }
         return Optional.empty();
     }
+
+    public void logout(){
+
+    }
 }

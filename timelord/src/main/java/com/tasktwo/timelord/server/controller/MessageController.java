@@ -2,7 +2,6 @@ package com.tasktwo.timelord.server.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.nimbusds.jose.JOSEException;
-import com.sun.tools.jconsole.JConsoleContext;
 import com.tasktwo.timelord.server.DTO.MessageDTO;
 import com.tasktwo.timelord.server.model.MessageModel;
 import com.tasktwo.timelord.server.model.UserModel;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/messages")
@@ -81,11 +79,9 @@ public class MessageController {
             return List.of("You are logged out. Please log in again");
         }
 
-        System.out.println("1");
         String email = jwtService.extractEmail(jwtToken);
         Optional<UserModel> userOptional = userService.getUserByEmail(email);
         if (userOptional.isPresent()) {
-            System.out.println("2");
             UserModel user = userOptional.get();
             List<MessageModel> messages = user.getMessages();
 
@@ -103,6 +99,5 @@ public class MessageController {
         }
         else {
             return List.of("No messages"); }
-        //Fetch all time capsules for the user
     }
 }
